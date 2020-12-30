@@ -1,12 +1,10 @@
 package www.sebasorozco.com.tasktimer.ui.dialogs
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import www.sebasorozco.com.tasktimer.R
 
 fun FragmentActivity.findFragmentById(id: Int) : Fragment?{
     return supportFragmentManager.findFragmentById(id)

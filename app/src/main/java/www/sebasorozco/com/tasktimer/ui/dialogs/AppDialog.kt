@@ -59,7 +59,7 @@ class AppDialog : AppCompatDialogFragment() {
 
         val builder = AlertDialog.Builder(requireContext())
 
-        // fix "smart cast to Bundle is imposible, because 'arguments' is a mutable property that could
+        // fix "smart cast to Bundle is impossible, because 'arguments' is a mutable property that could
         // have been changed by this time"
         val arguments = arguments
         val dialogId: Int
