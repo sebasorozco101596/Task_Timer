@@ -11,11 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import www.sebasorozco.com.tasktimer.R
 import www.sebasorozco.com.tasktimer.data.database.Task
-import www.sebasorozco.com.tasktimer.ui.dialogs.showConfirmationDialog
 import www.sebasorozco.com.tasktimer.databinding.ActivityMainBinding
+import www.sebasorozco.com.tasktimer.ui.dialogs.*
 import www.sebasorozco.com.tasktimer.ui.fragments.AddEditFragment
 import www.sebasorozco.com.tasktimer.ui.fragments.MainActivityFragment
-import www.sebasorozco.com.tasktimer.ui.dialogs.AppDialog
 
 private const val TAG = "MainActivity"
 private const val DIALOG_ID_CANCEL_EDIT = 1
@@ -32,8 +31,6 @@ class MainActivity : AppCompatActivity(),
 
     private lateinit var binding: ActivityMainBinding
 
-    // Pruebas
-
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate: starts")
         super.onCreate(savedInstanceState)
@@ -46,7 +43,7 @@ class MainActivity : AppCompatActivity(),
         Log.d(TAG, "onCreate: twoPane is $mTwoPane")
 
 
-        val fragment = supportFragmentManager.findFragmentById(R.id.taskDetailsContainer)
+        val fragment = findFragmentById(R.id.taskDetailsContainer)
         if (fragment != null) {
             // There was an existing fragment to edit a task, make sure the panes are set correctly
             showEditPane()
@@ -67,9 +64,12 @@ class MainActivity : AppCompatActivity(),
     private fun removedEditPane(fragment: Fragment? = null) {
         Log.d(TAG, "removedEditPane: called")
         if (fragment != null) {
+            /*
             supportFragmentManager.beginTransaction()
                 .remove(fragment)
                 .commit()
+             */
+            removeFragment(fragment)
         }
 
         // Set the visibility of the right hand pane
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity(),
             R.id.menumain_addtask -> taskEditRequest(null)
             android.R.id.home -> {
                 Log.d(TAG, "onOptionsItemSelected: home button pressed")
-                val fragment = supportFragmentManager.findFragmentById(R.id.taskDetailsContainer)
+                val fragment = findFragmentById(R.id.taskDetailsContainer)
 
                 if ((fragment is AddEditFragment) && fragment.isDirty()) {
                     showConfirmationDialog(
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity(),
     override fun onBackPressed() {
 
         Log.d(TAG, "onBackPressed: button back pressed")
-        val fragment = supportFragmentManager.findFragmentById(R.id.taskDetailsContainer)
+        val fragment = findFragmentById(R.id.taskDetailsContainer)
         if (fragment == null || mTwoPane) {
             super.onBackPressed()
         } else {
@@ -138,20 +138,24 @@ class MainActivity : AppCompatActivity(),
         Log.d(TAG, "taskEditRequest: starts")
 
         //create a new fragment to edit the task sending all the information about the task to edit
+        /*
         val newFragment = AddEditFragment.newInstance(task)
         supportFragmentManager.beginTransaction()
             .replace(R.id.taskDetailsContainer, newFragment)
             .commit()
 
+
+
+         */
         showEditPane()
+        replaceFragment(AddEditFragment.newInstance(task),R.id.taskDetailsContainer)
 
         Log.d(TAG, "Exiting taskEditRequest")
     }
 
     override fun onSaveClicked() {
         Log.d(TAG, "onSaveClicked: called")
-        val fragment = supportFragmentManager.findFragmentById(R.id.taskDetailsContainer)
-        removedEditPane(fragment)
+        removedEditPane(findFragmentById(R.id.taskDetailsContainer))
     }
 
     override fun onTaskEdit(task: Task) {
@@ -161,8 +165,7 @@ class MainActivity : AppCompatActivity(),
     override fun onPositiveDialogResult(dialogId: Int, args: Bundle) {
         Log.d(TAG,"onPositiveDialogResult: called with dialogId $dialogId")
         if(dialogId == DIALOG_ID_CANCEL_EDIT){
-            val fragment = supportFragmentManager.findFragmentById(R.id.taskDetailsContainer)
-            removedEditPane(fragment)
+            removedEditPane(findFragmentById(R.id.taskDetailsContainer))
         }
     }
 }
