@@ -32,6 +32,8 @@ class MainActivity : AppCompatActivity(),
 
     private lateinit var binding: ActivityMainBinding
 
+    // Pruebas
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate: starts")
         super.onCreate(savedInstanceState)
