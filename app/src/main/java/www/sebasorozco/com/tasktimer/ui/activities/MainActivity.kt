@@ -6,10 +6,14 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import www.sebasorozco.com.tasktimer.BuildConfig
 import www.sebasorozco.com.tasktimer.R
 import www.sebasorozco.com.tasktimer.data.database.Task
+import www.sebasorozco.com.tasktimer.databinding.AboutBinding
 import www.sebasorozco.com.tasktimer.databinding.ActivityMainBinding
 import www.sebasorozco.com.tasktimer.ui.dialogs.*
 import www.sebasorozco.com.tasktimer.ui.fragments.AddEditFragment
@@ -27,6 +31,10 @@ class MainActivity : AppCompatActivity(),
     // Whether or the activity is in 2-pane mode
     // i.e running in landscape, or on a tablet
     private var mTwoPane = false
+
+    // Module scope because we need to dismiss if it onStop (e.g. when orientation changes) to avoid memory leaks.
+    private var aboutDialog: AlertDialog? = null
+
 
     private lateinit var binding: ActivityMainBinding
 
@@ -93,6 +101,7 @@ class MainActivity : AppCompatActivity(),
         // as you specify a parent activity in AndroidManifest.xml.
         when (item.itemId) {
             R.id.menumain_addtask -> taskEditRequest(null)
+            R.id.menumain_showAbout -> showAboutDialog()
             android.R.id.home -> {
                 Log.d(TAG, "onOptionsItemSelected: home button pressed")
                 val fragment = findFragmentById(R.id.taskDetailsContainer)
@@ -108,8 +117,27 @@ class MainActivity : AppCompatActivity(),
                     removedEditPane(fragment)
                 }
             }
+
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showAboutDialog(){
+
+        val binding = AboutBinding.inflate(layoutInflater,null,false)
+
+        //val messageView = layoutInflater.inflate(R.layout.about,null,false)
+        val builder = AlertDialog.Builder(this)
+
+        aboutDialog = builder.setView(binding.root).create()
+        aboutDialog?.setCanceledOnTouchOutside(true)
+
+        builder.setTitle(R.string.app_name)  // This won't work
+        builder.setIcon(R.mipmap.ic_launcher)
+
+        binding.aboutVersion.text = BuildConfig.VERSION_NAME
+
+        aboutDialog?.show()
     }
 
     override fun onBackPressed() {
