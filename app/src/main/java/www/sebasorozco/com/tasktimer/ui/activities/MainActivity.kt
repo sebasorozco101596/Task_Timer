@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -124,16 +123,16 @@ class MainActivity : AppCompatActivity(),
 
     private fun showAboutDialog(){
 
-        val binding = AboutBinding.inflate(layoutInflater,null,false)
+        val binding = AboutBinding.inflate(layoutInflater, null, false)
 
         //val messageView = layoutInflater.inflate(R.layout.about,null,false)
         val builder = AlertDialog.Builder(this)
 
+        builder.setTitle(R.string.app_name)  // This is working because is before to set the builder to the adapter
+        builder.setIcon(R.mipmap.ic_launcher)
+
         aboutDialog = builder.setView(binding.root).create()
         aboutDialog?.setCanceledOnTouchOutside(true)
-
-        builder.setTitle(R.string.app_name)  // This won't work
-        builder.setIcon(R.mipmap.ic_launcher)
 
         binding.aboutVersion.text = BuildConfig.VERSION_NAME
 
@@ -190,9 +189,16 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onPositiveDialogResult(dialogId: Int, args: Bundle) {
-        Log.d(TAG,"onPositiveDialogResult: called with dialogId $dialogId")
-        if(dialogId == DIALOG_ID_CANCEL_EDIT){
+        Log.d(TAG, "onPositiveDialogResult: called with dialogId $dialogId")
+        if (dialogId == DIALOG_ID_CANCEL_EDIT) {
             removedEditPane(findFragmentById(R.id.taskDetailsContainer))
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (aboutDialog?.isShowing == true) {
+            aboutDialog?.dismiss()
         }
     }
 }
