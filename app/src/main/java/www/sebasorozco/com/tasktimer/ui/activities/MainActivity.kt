@@ -1,11 +1,16 @@
 package www.sebasorozco.com.tasktimer.ui.activities
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -24,7 +29,7 @@ private const val DIALOG_ID_CANCEL_EDIT = 1
 class MainActivity : AppCompatActivity(),
     AddEditFragment.OnSaveClicked,
     MainActivityFragment.OnTaskEdit,
-    AppDialog.DialogEvents{
+    AppDialog.DialogEvents {
 
 
     // Whether or the activity is in 2-pane mode
@@ -121,11 +126,62 @@ class MainActivity : AppCompatActivity(),
         return super.onOptionsItemSelected(item)
     }
 
-    private fun showAboutDialog(){
+    private fun showAboutDialog() {
 
         val binding = AboutBinding.inflate(layoutInflater, null, false)
 
-        //val messageView = layoutInflater.inflate(R.layout.about,null,false)
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle(R.string.app_name)  // This is working because is before to set the builder to the adapter
+        builder.setIcon(R.mipmap.ic_launcher)
+
+        builder.setPositiveButton(R.string.ok) { _, _ ->
+            Log.d(TAG, "onClick")
+            if (aboutDialog != null && aboutDialog?.isShowing == true) {
+                aboutDialog?.dismiss()
+            }
+        }
+
+        aboutDialog = builder.setView(binding.root).create()
+        aboutDialog?.setCanceledOnTouchOutside(true)
+
+
+        binding.root.setOnClickListener {
+            Log.d(TAG, "Entering messageView.onClick")
+            if (aboutDialog != null && aboutDialog?.isShowing == true) {
+                aboutDialog?.dismiss()
+            }
+        }
+
+        binding.aboutVersion.text = BuildConfig.VERSION_NAME
+
+        // In case that i need to make some textView send to a web page
+        // For this use i need to implement some versioning on the [aboutVersion (TextView)] for separate
+        // The link and the description and just to make clickable the link with the onClickListener
+        // As is show in the next code lines
+        binding.aboutVersion.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW)
+            val s = (it as TextView).text.toString()
+            intent.data = Uri.parse(s)
+            try {
+                startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(
+                    this@MainActivity,
+                    getString(R.string.about_url_error),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
+
+        aboutDialog?.show()
+    }
+
+    /*private fun showAboutDialog(){
+
+        val binding = AboutBinding.inflate(layoutInflater, null, false)
+
         val builder = AlertDialog.Builder(this)
 
         builder.setTitle(R.string.app_name)  // This is working because is before to set the builder to the adapter
@@ -134,10 +190,17 @@ class MainActivity : AppCompatActivity(),
         aboutDialog = builder.setView(binding.root).create()
         aboutDialog?.setCanceledOnTouchOutside(true)
 
+        binding.root.setOnClickListener{
+            Log.d(TAG,"Entering messageView.onClick")
+            if (aboutDialog != null && aboutDialog?.isShowing == true) {
+                aboutDialog?.dismiss()
+            }
+        }
+
         binding.aboutVersion.text = BuildConfig.VERSION_NAME
 
         aboutDialog?.show()
-    }
+    }*/
 
     override fun onBackPressed() {
 
@@ -174,7 +237,7 @@ class MainActivity : AppCompatActivity(),
 
          */
         showEditPane()
-        replaceFragment(AddEditFragment.newInstance(task),R.id.taskDetailsContainer)
+        replaceFragment(AddEditFragment.newInstance(task), R.id.taskDetailsContainer)
 
         Log.d(TAG, "Exiting taskEditRequest")
     }
