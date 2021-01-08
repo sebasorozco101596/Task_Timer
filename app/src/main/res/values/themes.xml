@@ -37,5 +37,12 @@
         <item name="android:textSize">10sp</item>
     </style>
 
+    <!-- Settings Dialos Day-->
+
+    <style name="SettingsDialogStyle" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="windowNoTitle">false</item>
+        <item name="colorOnPrimary">@color/black</item>
+    </style>
+
 </resources>
 

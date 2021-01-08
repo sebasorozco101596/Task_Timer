@@ -106,6 +106,10 @@ class MainActivity : AppCompatActivity(),
         when (item.itemId) {
             R.id.menumain_addtask -> taskEditRequest(null)
             R.id.menumain_showAbout -> showAboutDialog()
+            R.id.menumain_settings -> {
+                val dialog = SettingsDialog()
+                dialog.show(supportFragmentManager, null)
+            }
             android.R.id.home -> {
                 Log.d(TAG, "onOptionsItemSelected: home button pressed")
                 val fragment = findFragmentById(R.id.taskDetailsContainer)

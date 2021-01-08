@@ -12,8 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import www.sebasorozco.com.tasktimer.data.database.Task
-import www.sebasorozco.com.tasktimer.databinding.FragmentAddEditBinding
 import www.sebasorozco.com.tasktimer.data.viewmodel.TaskTimerViewModel
+import www.sebasorozco.com.tasktimer.databinding.FragmentAddEditBinding
 import www.sebasorozco.com.tasktimer.ui.dialogs.AppDialog
 
 private const val TAG = "AddEditFragment"
