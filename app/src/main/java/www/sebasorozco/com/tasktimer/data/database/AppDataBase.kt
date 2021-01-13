@@ -12,7 +12,7 @@ import android.util.Log
  */
 private const val TAG = "AppDataBase"
 private const val DATABASE_NAME = "TaskTimer.db"
-private const val DATABASE_VERSION = 2
+private const val DATABASE_VERSION = 3
 
 //Making the constructor private is the first step to create a Singleton class
 internal class AppDataBase private constructor(context: Context) : SQLiteOpenHelper(
@@ -37,6 +37,7 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
         db.execSQL(sSQL)
 
         addTimingsTable(db)
+        addCurrentTimingView(db)
 
     }
 
@@ -46,6 +47,10 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
             1 -> {
                 //upgrade logic from version 1
                 addTimingsTable(db)
+                addCurrentTimingView(db)
+            }
+            2 -> {
+                addCurrentTimingView(db)
             }
             else -> throw IllegalStateException("onUpgrade() with unknown newVersion: $newVersion")
         }
@@ -72,6 +77,35 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
         Log.d(TAG, sSQLTrigger)
         db.execSQL(sSQLTrigger)
     }
+
+    private fun addCurrentTimingView(db: SQLiteDatabase) {
+        /*
+        CREATE VIEW vwCurrentTiming
+             AS SELECT Timings._id,
+                 Timings.TaskId,
+                 Timings.StartTime,
+                 Tasks.Name
+             FROM Timings
+             JOIN Tasks
+             ON Timings.TaskId = Tasks._id
+             WHERE Timings.Duration = 0
+             ORDER BY Timings.StartTime DESC;
+         */
+        val sSQLTimingView = """CREATE VIEW ${CurrentTimingContract.TABLE_NAME}
+        AS SELECT ${TimingsContract.TABLE_NAME}.${TimingsContract.Columns.ID},
+            ${TimingsContract.TABLE_NAME}.${TimingsContract.Columns.TIMING_TASK_ID},
+            ${TimingsContract.TABLE_NAME}.${TimingsContract.Columns.TIMING_START_TIME},
+            ${TasksContract.TABLE_NAME}.${TasksContract.Columns.TASK_NAME}
+        FROM ${TimingsContract.TABLE_NAME}
+        JOIN ${TasksContract.TABLE_NAME}
+        ON ${TimingsContract.TABLE_NAME}.${TimingsContract.Columns.TIMING_TASK_ID} = ${TasksContract.TABLE_NAME}.${TasksContract.Columns.ID}
+        WHERE ${TimingsContract.TABLE_NAME}.${TimingsContract.Columns.TIMING_DURATION} = 0
+        ORDER BY ${TimingsContract.TABLE_NAME}.${TimingsContract.Columns.TIMING_START_TIME} DESC;
+    """.replaceIndent(" ")
+        Log.d(TAG, sSQLTimingView)
+        db.execSQL(sSQLTimingView)
+    }
+
 
     companion object : SingletonHolder<AppDataBase, Context>(::AppDataBase)
 }

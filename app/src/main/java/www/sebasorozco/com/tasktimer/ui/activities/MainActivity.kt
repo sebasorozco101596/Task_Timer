@@ -11,12 +11,15 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import www.sebasorozco.com.tasktime.debug.TestData
 import www.sebasorozco.com.tasktimer.BuildConfig
 import www.sebasorozco.com.tasktimer.R
 import www.sebasorozco.com.tasktimer.data.database.Task
+import www.sebasorozco.com.tasktimer.data.viewmodel.TaskTimerViewModel
 import www.sebasorozco.com.tasktimer.databinding.AboutBinding
 import www.sebasorozco.com.tasktimer.databinding.ActivityMainBinding
 import www.sebasorozco.com.tasktimer.ui.dialogs.*
@@ -39,6 +42,7 @@ class MainActivity : AppCompatActivity(),
     // Module scope because we need to dismiss if it onStop (e.g. when orientation changes) to avoid memory leaks.
     private var aboutDialog: AlertDialog? = null
 
+    private val viewModel: TaskTimerViewModel by viewModels()
 
     private lateinit var binding: ActivityMainBinding
 
@@ -64,6 +68,15 @@ class MainActivity : AppCompatActivity(),
                 if (mTwoPane) View.INVISIBLE else View.GONE
             binding.contentMain.mainFragment.visibility = View.VISIBLE
         }
+
+        viewModel.timing.observe(this, { timing ->
+            binding.contentMain.mainFragment.findViewById<TextView>(R.id.currentTask).text =
+                if (timing != null) {
+                    getString(R.string.timing_message, timing)
+                } else {
+                    getString(R.string.no_task_message)
+                }
+        })
     }
 
     private fun showEditPane() {
@@ -96,6 +109,11 @@ class MainActivity : AppCompatActivity(),
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
+
+        if (BuildConfig.DEBUG) {
+            val generate = menu.findItem(R.id.menumain_generate)
+            generate.isVisible = true
+        }
         return true
     }
 
@@ -106,6 +124,7 @@ class MainActivity : AppCompatActivity(),
         when (item.itemId) {
             R.id.menumain_addtask -> taskEditRequest(null)
             R.id.menumain_showAbout -> showAboutDialog()
+            R.id.menumain_generate -> TestData.generateTestData(contentResolver)
             R.id.menumain_settings -> {
                 val dialog = SettingsDialog()
                 dialog.show(supportFragmentManager, null)

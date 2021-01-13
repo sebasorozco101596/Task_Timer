@@ -13,8 +13,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import www.sebasorozco.com.tasktimer.data.database.Task
-import www.sebasorozco.com.tasktimer.data.database.TasksContract
+import www.sebasorozco.com.tasktimer.data.database.*
 
 private const val TAG = "TaskTimerViewModel"
 
@@ -27,9 +26,15 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
             loadTask()
         }
     }
+
+    private var currentTiming: Timing? = null
     private val databaseCursor = MutableLiveData<Cursor>()
     val cursor: LiveData<Cursor>
         get() = databaseCursor
+
+    private val taskTiming = MutableLiveData<String>()
+    val timing: LiveData<String>
+        get() = taskTiming
 
     init {
         Log.d(TAG, "TaskTimerViewModel: created")
@@ -39,8 +44,11 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
             true,
             contentObserver
         )
+
+        currentTiming = retrieveTiming()
         loadTask()
     }
+
 
     private fun loadTask() {
 
@@ -81,6 +89,68 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    fun timeTask(task: Task) {
+        Log.d(TAG, "timeTask: called")
+        // Use local variable, to allow smart casts
+        val timingRecord = currentTiming
+
+        if (timingRecord == null) {
+            // No task being, start timing the new task
+            currentTiming = Timing(task.id)
+            saveTiming(currentTiming!!)
+        } else {
+            // We have a task being timed, so save it
+            timingRecord.setDuration()
+            saveTiming(timingRecord)
+            if (task.id == timingRecord.taskId) {
+                // The current task was tapped a second time, stop timing
+                currentTiming = null
+            } else {
+                // A new task is being timed
+                val newTiming = Timing(task.id)
+                saveTiming(newTiming)
+                currentTiming = newTiming
+            }
+        }
+
+        // Update the liveData
+        taskTiming.value = if (currentTiming != null) task.name else null
+
+    }
+
+    private fun saveTiming(currentTiming: Timing) {
+        Log.d(TAG, "saveTiming: called")
+
+        // Are we updating, or inserting a new row?
+        val inserting = (currentTiming.duration == 0L)
+
+        val values = ContentValues().apply {
+            if (inserting) {
+                put(TimingsContract.Columns.TIMING_TASK_ID, currentTiming.taskId)
+                put(TimingsContract.Columns.TIMING_START_TIME, currentTiming.startTime)
+            }
+            put(TimingsContract.Columns.TIMING_DURATION, currentTiming.duration)
+        }
+
+        GlobalScope.launch {
+            if (inserting) {
+                val uri = getApplication<Application>().contentResolver.insert(
+                    TimingsContract.CONTENT_URI,
+                    values
+                )
+                if (uri != null) {
+                    currentTiming.id = TimingsContract.getId(uri)
+                }
+            } else {
+                getApplication<Application>().contentResolver.update(
+                    TimingsContract.buildUriFromId(
+                        currentTiming.id
+                    ), values, null, null
+                )
+            }
+        }
+    }
+
     fun saveTask(task: Task): Task {
         val values = ContentValues()
 
@@ -118,6 +188,42 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
         return task
+    }
+
+    private fun retrieveTiming(): Timing? {
+        Log.d(TAG, "retrieveTiming starts")
+        val timing: Timing?
+
+        val timingCursor: Cursor? = getApplication<Application>().contentResolver.query(
+            CurrentTimingContract.CONTENT_URI,
+            null, // Passing null for the projection returns all columns.
+            null,
+            null,
+            null
+        )
+
+        if (timingCursor != null && timingCursor.moveToFirst()) {
+            // We have an un-timed record
+            val id =
+                timingCursor.getLong(timingCursor.getColumnIndex(CurrentTimingContract.Columns.TIMING_ID))
+            val taskId =
+                timingCursor.getLong(timingCursor.getColumnIndex(CurrentTimingContract.Columns.TASK_ID))
+            val startTime =
+                timingCursor.getLong(timingCursor.getColumnIndex(CurrentTimingContract.Columns.START_TIME))
+            val name =
+                timingCursor.getString(timingCursor.getColumnIndex(CurrentTimingContract.Columns.TASK_NAME))
+            timing = Timing(taskId, startTime, id)
+
+            // Update the liveData
+            taskTiming.value = name
+        } else {
+            // No timing record found with zero duration
+            timing = null
+        }
+        timingCursor?.close()
+        Log.d(TAG, "retrieveTiming returning")
+
+        return timing
     }
 
     /**

@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,7 +15,10 @@ import www.sebasorozco.com.tasktimer.data.database.Task
 import www.sebasorozco.com.tasktimer.data.viewmodel.TaskTimerViewModel
 import www.sebasorozco.com.tasktimer.databinding.FragmentMainBinding
 import www.sebasorozco.com.tasktimer.ui.adapters.CursorRecyclerViewAdapter
-import www.sebasorozco.com.tasktimer.ui.dialogs.*
+import www.sebasorozco.com.tasktimer.ui.dialogs.AppDialog
+import www.sebasorozco.com.tasktimer.ui.dialogs.DIALOG_ID
+import www.sebasorozco.com.tasktimer.ui.dialogs.DIALOG_MESSAGE
+import www.sebasorozco.com.tasktimer.ui.dialogs.DIALOG_POSITIVE_RID
 
 
 private const val TAG = "MainActivityFragment"
@@ -106,7 +108,8 @@ class MainActivityFragment : Fragment(),
     }
 
     override fun onTaskLongClick(task: Task) {
-        Toast.makeText(context, "please implement the onTaskLongClick", Toast.LENGTH_LONG).show()
+        Log.d(TAG, "onTaskLongClick: called")
+        viewModel.timeTask(task)
     }
 
     override fun onPositiveDialogResult(dialogId: Int, args: Bundle) {
