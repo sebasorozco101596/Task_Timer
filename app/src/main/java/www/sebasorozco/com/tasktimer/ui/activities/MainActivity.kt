@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity(),
     MainActivityFragment.OnTaskEdit,
     AppDialog.DialogEvents {
 
-
     // Whether or the activity is in 2-pane mode
     // i.e running in landscape, or on a tablet
     private var mTwoPane = false

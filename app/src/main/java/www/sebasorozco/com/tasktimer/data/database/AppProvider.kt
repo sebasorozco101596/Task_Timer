@@ -28,8 +28,8 @@ private const val TIMINGS_ID = 201
 
 private const val CURRENT_TIMING = 300
 
-//private const val TASK_DURATIONS = 400
-//private const val TASK_DURATIONS_ID = 401
+private const val TASK_DURATIONS = 400
+private const val TASK_DURATIONS_ID = 401
 
 //The "content:// is for use the Content provider for the use of the data base
 val CONTENT_AUTHORITY_URI: Uri = Uri.parse("content://$CONTENT_AUTHORITY")
@@ -53,10 +53,10 @@ class AppProvider : ContentProvider() {
         matcher.addURI(CONTENT_AUTHORITY, "${TimingsContract.TABLE_NAME}/#", TIMINGS_ID)
 
         matcher.addURI(CONTENT_AUTHORITY, CurrentTimingContract.TABLE_NAME, CURRENT_TIMING)
-        /*
-        matcher.addURI(CONTENT_AUTHORITY, DurationsContract.TABLE_NAME, TASK_DURATION)
-        matcher.addURI(CONTENT_AUTHORITY,"${DurationsContract.TABLE_NAME}/#", TASK_DURATION_ID)
-         */
+
+        matcher.addURI(CONTENT_AUTHORITY, DurationsContract.TABLE_NAME, TASK_DURATIONS)
+        //matcher.addURI(CONTENT_AUTHORITY,"${DurationsContract.TABLE_NAME}/#", TASK_DURATIONS_ID)
+
         return matcher
     }
 
@@ -98,18 +98,19 @@ class AppProvider : ContentProvider() {
                 queryBuilder.tables = CurrentTimingContract.TABLE_NAME
             }
 
-            /*
 
             TASK_DURATIONS -> queryBuilder.tables = DurationsContract.TABLE_NAME
 
+            /*
             TASK_DURATIONS_ID -> {
                 queryBuilder.tables = DurationsContract.TABLE_NAME
                 val durationId = DurationsContract.getId(uri)
                 queryBuilder.appendWhere("${DurationsContract.Columns.ID} = ")   // <-- and here
                 queryBuilder.appendWhereEscapeString("$durationId")
             }
-
              */
+
+
 
             else -> throw IllegalArgumentException("Unknown URI: $uri")
         }
@@ -133,9 +134,10 @@ class AppProvider : ContentProvider() {
 
             CURRENT_TIMING -> CurrentTimingContract.CONTENT_ITEM_TYPE
 
-            /*
+
             TASK_DURATIONS -> DurationsContract.CONTENT_TYPE
 
+            /*
             TASK_DURATIONS_ID -> DurationsContract.CONTENT_ITEM_TYPE
              */
 
