@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:showIn="@layout/task_durations">
+
+    <TextView
+        android:id="@+id/tdName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:padding="4dp"
+        app:layout_constraintEnd_toStartOf="@+id/tdDescription"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/td_text_name" />
+
+    <TextView
+        android:id="@+id/tdDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:padding="4dp"
+        android:text="@string/td_text_description"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tdName"
+        app:layout_constraintEnd_toStartOf="@+id/tdStart"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintStart_toEndOf="@+id/tdName" />
+
+    <TextView
+        android:id="@+id/tdStart"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:padding="4dp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tdName"
+        app:layout_constraintEnd_toStartOf="@+id/tdDuration"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/tdDescription"
+        tools:text="@string/td_text_date" />
+
+    <TextView
+        android:id="@+id/tdDuration"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:padding="4dp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tdStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/tdStart"
+        tools:text="@string/td_text_duration" />
+</androidx.constraintlayout.widget.ConstraintLayout>

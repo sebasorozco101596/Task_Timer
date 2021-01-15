@@ -31,4 +31,8 @@
     <string name="about_credits">Icon derived from <b>analog clock</b> at openclipart.org by <b>Anonymous</b></string>
     <string name="about_url_error">No browser application found, cannot visit world-wide web</string>
     <string name="timing_message">Currently timing %1$s</string>
+    <string name="td_text_name">Task name</string>
+    <string name="td_text_date">Date</string>
+    <string name="td_text_duration">Duration</string>
+    <string name="td_text_description">Description</string>
 </resources>
