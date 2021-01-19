@@ -124,6 +124,12 @@ class MainActivity : AppCompatActivity(),
             R.id.menumain_addtask -> taskEditRequest(null)
             R.id.menumain_showAbout -> showAboutDialog()
             R.id.menumain_generate -> TestData.generateTestData(contentResolver)
+            R.id.menumain_showDurations -> startActivity(
+                Intent(
+                    this,
+                    DurationsReportActivity::class.java
+                )
+            )
             R.id.menumain_settings -> {
                 val dialog = SettingsDialog()
                 dialog.show(supportFragmentManager, null)
