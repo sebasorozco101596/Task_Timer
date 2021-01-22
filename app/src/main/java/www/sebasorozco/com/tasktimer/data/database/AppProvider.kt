@@ -66,8 +66,10 @@ class AppProvider : ContentProvider() {
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    override fun query(uri: Uri, projection: Array<out String>?, selection: String?,
-                       selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
+    override fun query(
+        uri: Uri, projection: Array<out String>?, selection: String?,
+        selectionArgs: Array<out String>?, sortOrder: String?
+    ): Cursor? {
         Log.d(TAG, "query: called with uri $uri")
         val match = uriMatcher.match(uri)
         Log.d(TAG, "query: match is $match")
@@ -76,6 +78,7 @@ class AppProvider : ContentProvider() {
 
         when (match) {
             TASKS -> queryBuilder.tables = TasksContract.TABLE_NAME
+
 
             TASKS_ID -> {
                 queryBuilder.tables = TasksContract.TABLE_NAME
@@ -116,7 +119,8 @@ class AppProvider : ContentProvider() {
         }
 
         val db = AppDataBase.getInstance(context!!).readableDatabase
-        val cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
+        val cursor =
+            queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
         Log.d(TAG, "query: rows in returned cursor = ${cursor.count}") // TODO remove this line
 
         return cursor
@@ -176,17 +180,22 @@ class AppProvider : ContentProvider() {
             else -> throw java.lang.IllegalArgumentException("Unknown uri: $uri")
         }
 
-        if(recordId > 0 ){
+        if (recordId > 0) {
             //something was inserted
-            Log.d(TAG,"Existing insert, returning $returnUri")
-            context?.contentResolver?.notifyChange(uri,null)
+            Log.d(TAG, "Existing insert, returning $returnUri")
+            context?.contentResolver?.notifyChange(uri, null)
         }
 
         Log.d(TAG, "Exiting insert, returning $returnUri")
         return returnUri
     }
 
-    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
+    override fun update(
+        uri: Uri,
+        values: ContentValues?,
+        selection: String?,
+        selectionArgs: Array<out String>?
+    ): Int {
         Log.d(TAG, "update: called with uri $uri")
         val match = uriMatcher.match(uri)
         Log.d(TAG, "update: match is $match")
@@ -208,7 +217,8 @@ class AppProvider : ContentProvider() {
                     selectionCriteria += "AND ($selection)"
                 }
 
-                count = db.update(TasksContract.TABLE_NAME, values, selectionCriteria, selectionArgs)
+                count =
+                    db.update(TasksContract.TABLE_NAME, values, selectionCriteria, selectionArgs)
             }
             TIMINGS -> {
                 val db = AppDataBase.getInstance(context!!).writableDatabase
@@ -223,15 +233,16 @@ class AppProvider : ContentProvider() {
                     selectionCriteria += "AND ($selection)"
                 }
 
-                count = db.update(TimingsContract.TABLE_NAME, values, selectionCriteria, selectionArgs)
+                count =
+                    db.update(TimingsContract.TABLE_NAME, values, selectionCriteria, selectionArgs)
             }
             else -> throw IllegalArgumentException("Unknown uri: $uri")
         }
 
-        if(count > 0 ){
+        if (count > 0) {
             //something was updated
-            Log.d(TAG,"update, Setting notifyChange with $uri")
-            context?.contentResolver?.notifyChange(uri,null)
+            Log.d(TAG, "update, Setting notifyChange with $uri")
+            context?.contentResolver?.notifyChange(uri, null)
         }
         Log.d(TAG, "exiting update, returning $count")
         return count
@@ -259,7 +270,7 @@ class AppProvider : ContentProvider() {
                     selectionCriteria += "AND ($selection)"
                 }
 
-                count = db.delete(TasksContract.TABLE_NAME,selectionCriteria, selectionArgs)
+                count = db.delete(TasksContract.TABLE_NAME, selectionCriteria, selectionArgs)
             }
             TIMINGS -> {
                 val db = AppDataBase.getInstance(context!!).writableDatabase
@@ -283,10 +294,10 @@ class AppProvider : ContentProvider() {
         //is used for notify the changes on the Adapter, in this case if the user delete some task
         // the app gonna delete this task immediately from the Adapter
         // the $uri is always used for know the exactly row that is the task
-        if(count > 0 ){
+        if (count > 0) {
             //something was deleted
-            Log.d(TAG,"delete, setting notifyChange with $uri")
-            context?.contentResolver?.notifyChange(uri,null)
+            Log.d(TAG, "delete, setting notifyChange with $uri")
+            context?.contentResolver?.notifyChange(uri, null)
         }
         Log.d(TAG, "exiting delete, returning $count")
         return count

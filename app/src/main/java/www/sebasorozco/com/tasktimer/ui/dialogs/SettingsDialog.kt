@@ -14,7 +14,7 @@ import java.util.*
 
 private const val TAG = "SettingsDialog"
 
-private const val SETTINGS_FIRST_DAY_OF_WEEK = "FirstDay"
+const val SETTINGS_FIRST_DAY_OF_WEEK = "FirstDay"
 const val SETTINGS_IGNORE_LESS_THAN = "IgnoreLessThan"
 const val SETTINGS_DEFAULT_IGNORE_LESS_THAN = 0
 
