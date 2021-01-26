@@ -2,7 +2,6 @@ package www.sebasorozco.com.tasktimer.ui.dialogs
 
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
@@ -106,10 +105,11 @@ class AppDialog : AppCompatDialogFragment() {
         dialogEvents = null
     }
 
+    /*
     override fun onCancel(dialog: DialogInterface) {
         Log.d(TAG, "onCancel: called")
         //val dialogId= requireArguments().getInt(DIALOG_ID)
        // dialogEvents?.onDialogCancel(dialogId)
-
     }
+     */
 }

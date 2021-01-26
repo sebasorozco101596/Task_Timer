@@ -179,10 +179,4 @@ class SettingsDialog : AppCompatDialogFragment() {
             apply()
         }
     }
-
-    override fun onDestroy() {
-        Log.d(TAG, "onDestroy: called")
-        super.onDestroy()
-
-    }
 }

@@ -145,8 +145,8 @@ class AddEditFragment : Fragment(),
         super.onActivityCreated(savedInstanceState)
 
         val listener = listener
-        if (listener is AppCompatActivity) {
-            val actionBar = (listener as AppCompatActivity?)?.supportActionBar
+        if (activity is AppCompatActivity) {
+            val actionBar = (activity as AppCompatActivity?)?.supportActionBar
             actionBar?.setDisplayHomeAsUpEnabled(true)
         }
 

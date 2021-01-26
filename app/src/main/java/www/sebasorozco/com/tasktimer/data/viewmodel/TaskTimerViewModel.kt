@@ -12,8 +12,9 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import www.sebasorozco.com.tasktimer.data.database.*
 import www.sebasorozco.com.tasktimer.ui.dialogs.SETTINGS_DEFAULT_IGNORE_LESS_THAN
@@ -90,7 +91,7 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
             "${TasksContract.Columns.TASK_SORT_ORDER}, ${TasksContract.Columns.TASK_NAME}"
 
         //The GlobalScore.launch is the way to create a thread in a coroutine
-        GlobalScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val cursor = getApplication<Application>().contentResolver.query(
                 TasksContract.CONTENT_URI,
                 projection, null, null,
@@ -105,7 +106,7 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
         Log.d(TAG, "Deleting task")
 
         //The GlobalScore.launch is the way to create a thread in a coroutine
-        GlobalScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             getApplication<Application>().contentResolver.delete(
                 TasksContract.buildUriFromId(taskId),
                 null,
@@ -127,14 +128,14 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
             // We have a task being timed, so save it
             timingRecord.setDuration()
             saveTiming(timingRecord)
-            if (task.id == timingRecord.taskId) {
+            currentTiming = if (task.id == timingRecord.taskId) {
                 // The current task was tapped a second time, stop timing
-                currentTiming = null
+                null
             } else {
                 // A new task is being timed
                 val newTiming = Timing(task.id)
                 saveTiming(newTiming)
-                currentTiming = newTiming
+                newTiming
             }
         }
 
@@ -157,7 +158,7 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
             put(TimingsContract.Columns.TIMING_DURATION, currentTiming.duration)
         }
 
-        GlobalScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             if (inserting) {
                 val uri = getApplication<Application>().contentResolver.insert(
                     TimingsContract.CONTENT_URI,
@@ -199,7 +200,7 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
             values.put(TasksContract.Columns.TASK_SORT_ORDER, task.sortOrder)
 
             if (task.id == 0L) {
-                GlobalScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     Log.d(TAG, "saveTask: adding new Task")
                     val uri = getApplication<Application>().contentResolver.insert(
                         TasksContract.CONTENT_URI,
@@ -212,7 +213,7 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             } else {
                 // Task has an id, so we're updating
-                GlobalScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     Log.d(TAG, "saveTask: updating Task")
                     getApplication<Application>().contentResolver.update(
                         TasksContract.buildUriFromId(task.id),
@@ -272,5 +273,7 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
         getApplication<Application>().contentResolver.unregisterContentObserver(contentObserver)
 
         settings.unregisterOnSharedPreferenceChangeListener(settingsListener)
+
+        databaseCursor.value?.close()
     }
 }

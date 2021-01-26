@@ -14,7 +14,7 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <!-- Settings Dialog Nigth -->
+    <!-- Settings Dialog Night -->
     <style name="SettingsDialogStyle" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="windowNoTitle">false</item>
         <item name="colorOnPrimary">@color/white</item>

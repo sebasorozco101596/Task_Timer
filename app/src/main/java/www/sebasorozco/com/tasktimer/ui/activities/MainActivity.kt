@@ -87,11 +87,6 @@ class MainActivity : AppCompatActivity(),
     private fun removedEditPane(fragment: Fragment? = null) {
         Log.d(TAG, "removedEditPane: called")
         if (fragment != null) {
-            /*
-            supportFragmentManager.beginTransaction()
-                .remove(fragment)
-                .commit()
-             */
             removeFragment(fragment)
         }
 
@@ -206,30 +201,6 @@ class MainActivity : AppCompatActivity(),
         aboutDialog?.show()
     }
 
-    /*private fun showAboutDialog(){
-
-        val binding = AboutBinding.inflate(layoutInflater, null, false)
-
-        val builder = AlertDialog.Builder(this)
-
-        builder.setTitle(R.string.app_name)  // This is working because is before to set the builder to the adapter
-        builder.setIcon(R.mipmap.ic_launcher)
-
-        aboutDialog = builder.setView(binding.root).create()
-        aboutDialog?.setCanceledOnTouchOutside(true)
-
-        binding.root.setOnClickListener{
-            Log.d(TAG,"Entering messageView.onClick")
-            if (aboutDialog != null && aboutDialog?.isShowing == true) {
-                aboutDialog?.dismiss()
-            }
-        }
-
-        binding.aboutVersion.text = BuildConfig.VERSION_NAME
-
-        aboutDialog?.show()
-    }*/
-
     override fun onBackPressed() {
 
         Log.d(TAG, "onBackPressed: button back pressed")
@@ -254,16 +225,6 @@ class MainActivity : AppCompatActivity(),
     private fun taskEditRequest(task: Task?) {
         Log.d(TAG, "taskEditRequest: starts")
 
-        //create a new fragment to edit the task sending all the information about the task to edit
-        /*
-        val newFragment = AddEditFragment.newInstance(task)
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.taskDetailsContainer, newFragment)
-            .commit()
-
-
-
-         */
         showEditPane()
         replaceFragment(AddEditFragment.newInstance(task), R.id.taskDetailsContainer)
 

@@ -70,11 +70,6 @@ class MainActivityFragment : Fragment(),
         binding?.taskList?.adapter = mAdapter
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onActivityCreated: called")
-        super.onActivityCreated(savedInstanceState)
-    }
-
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         Log.d(TAG, "onViewStateRestored: called")
         super.onViewStateRestored(savedInstanceState)

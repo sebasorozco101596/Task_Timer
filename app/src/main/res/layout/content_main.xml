@@ -16,11 +16,11 @@
         android:layout_weight="1"
         tools:layout="@layout/fragment_main" />
 
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/taskDetailsContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
 
-    </FrameLayout>
+    </androidx.fragment.app.FragmentContainerView>
 </LinearLayout>

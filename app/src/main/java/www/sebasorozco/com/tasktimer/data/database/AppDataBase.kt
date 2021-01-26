@@ -143,6 +143,5 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
         db.execSQL(sSQL)
     }
 
-
     companion object : SingletonHolder<AppDataBase, Context>(::AppDataBase)
 }

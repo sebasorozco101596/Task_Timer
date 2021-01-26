@@ -39,7 +39,8 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/tdNameHeading"
         app:layout_constraintEnd_toStartOf="@+id/tdStartHeading"
         app:layout_constraintHorizontal_weight="2"
-        app:layout_constraintStart_toEndOf="@+id/tdNameHeading" />
+        app:layout_constraintStart_toEndOf="@+id/tdNameHeading"
+        tools:ignore="InconsistentLayout" />
 
     <TextView
         android:id="@+id/tdStartHeading"

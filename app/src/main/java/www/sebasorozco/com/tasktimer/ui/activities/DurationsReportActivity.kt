@@ -94,8 +94,7 @@ class DurationsReportActivity : AppCompatActivity(),
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        when (id) {
+        when (item.itemId) {
             R.id.rmFilterPeriod -> {
                 viewModel.toggleDisplayWeek() // was showing a week, so now show a day - or vice versa
                 invalidateOptionsMenu() // Force call to onPrepareOptionsMenu to redraw our changed menu
@@ -156,9 +155,8 @@ class DurationsReportActivity : AppCompatActivity(),
         Log.d(TAG, "onDataSet: called")
 
         // Check the id, so we know what to do with the result
-        val dialogId = view.tag as Int
 
-        when (dialogId) {
+        when (view.tag as Int) {
             DIALOG_FILTER -> {
                 viewModel.setReportDate(year, month, dayOfMonth)
             }
@@ -193,12 +191,4 @@ class DurationsReportActivity : AppCompatActivity(),
         val deleteDate = args.getLong(DELETION_DATE)
         viewModel.deleteRecords(deleteDate)
     }
-
-    /*
-    override fun onDestroy() {
-        reportAdapter.swapCursor(null)?.close()
-        super.onDestroy()
-    }
-
- */
 }

@@ -76,16 +76,20 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?, private val listene
 
             // Create a Task object from the data in the cursor
 
-            val task = Task(
-                cursor.getString(cursor.getColumnIndex(TasksContract.Columns.TASK_NAME)),
-                cursor.getString(cursor.getColumnIndex(TasksContract.Columns.TASK_DESCRIPTION)),
-                cursor.getInt(cursor.getColumnIndex(TasksContract.Columns.TASK_SORT_ORDER))
-            )
+            with(cursor) {
+                val task = Task(
+                    getString(getColumnIndex(TasksContract.Columns.TASK_NAME)),
+                    getString(getColumnIndex(TasksContract.Columns.TASK_DESCRIPTION)),
+                    getInt(getColumnIndex(TasksContract.Columns.TASK_SORT_ORDER))
+                )
 
-            // Remember that the id isn't set in the constructor
-            task.id = cursor.getLong(cursor.getColumnIndex(TasksContract.Columns.ID))
+                // Remember that the id isn't set in the constructor
+                task.id = getLong(getColumnIndex(TasksContract.Columns.ID))
 
-            holder.bind(task,listener)
+                holder.bind(task, listener)
+            }
+
+
         }
 
     }

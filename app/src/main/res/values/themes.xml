@@ -23,20 +23,7 @@
 
     <style name="Theme.TaskTimer.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <!-- AlertDialog style -->
-    <style name="AlertDialogDay" parent="@android:style/Theme.Dialog">
-        <item name="android:textColor">#00FF00</item>
-        <item name="android:typeface">monospace</item>
-        <item name="android:textSize">10sp</item>
-    </style>
-
-    <style name="AlertDialogNight" parent="@android:style/Theme.Dialog">
-        <item name="android:textColor">#8CA18C</item>
-        <item name="android:typeface">monospace</item>
-        <item name="android:textSize">10sp</item>
-    </style>
-
-    <!-- Settings Dialos Day-->
+    <!-- Settings Dialog Day-->
 
     <style name="SettingsDialogStyle" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="windowNoTitle">false</item>

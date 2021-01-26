@@ -37,10 +37,6 @@ inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> Fragmen
     beginTransaction().func().commit()
 }
 
-fun FragmentActivity.addFragment(fragment: Fragment, frameId: Int){
-    supportFragmentManager.inTransaction { add(frameId,fragment) }
-}
-
 fun FragmentActivity.replaceFragment(fragment: Fragment, frameId: Int){
     supportFragmentManager.inTransaction { replace(frameId,fragment) }
 }
