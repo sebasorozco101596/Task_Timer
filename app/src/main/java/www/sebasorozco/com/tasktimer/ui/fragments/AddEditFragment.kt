@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -55,6 +56,8 @@ class AddEditFragment : Fragment(),
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: starts")
         task = arguments?.getParcelable(ARG_TASK)
+
+        setHasOptionsMenu(true)
     }
 
     /*
@@ -81,16 +84,25 @@ class AddEditFragment : Fragment(),
         Log.d(TAG, "onViewCreated: starts")
         if (savedInstanceState == null) {
             val task = task
-            if (task != null) {
-                Log.d(TAG, "onViewCreated: Task details found, editing task ${task.id}")
-                binding?.addeditName?.setText(task.name)
-                binding?.addeditDescription?.setText(task.description)
-                binding?.addeditSortorder?.setText(task.sortOrder.toString())
-            } else {
-                // No task, so we must be adding a new task, and NOT editing an existing one
-                Log.d(TAG, "onViewCreated: No arguments, adding new record")
+            with(task) {
+                if (this != null) {
+                    Log.d(TAG, "onViewCreated: Task details found, editing task ${id}")
+                    binding?.addeditName?.setText(name)
+                    binding?.addeditDescription?.setText(description)
+                    binding?.addeditSortorder?.setText(sortOrder.toString())
+
+                    viewModel.startEditing(id)
+                } else {
+                    // No task, so we must be adding a new task, and NOT editing an existing one
+                    Log.d(TAG, "onViewCreated: No arguments, adding new record")
+                }
             }
         }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        Log.d(TAG, "onPrepareOptionsMenu: called")
+        menu.clear()
     }
 
     private fun taskFromUI(): Task {
@@ -213,6 +225,8 @@ class AddEditFragment : Fragment(),
         Log.d(TAG, "onDetach: starts")
         super.onDetach()
         listener = null
+
+        viewModel.stopEditing()
     }
 
     /*

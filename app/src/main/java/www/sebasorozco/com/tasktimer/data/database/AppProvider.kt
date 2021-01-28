@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import learnprogramming.academy.tasktimer.ParametersContract
 
 /**
  * Created by Sebastian Orozco
@@ -29,6 +30,9 @@ private const val TIMINGS_ID = 201
 private const val CURRENT_TIMING = 300
 
 private const val TASK_DURATIONS = 400
+
+private const val PARAMETERS = 500
+private const val PARAMETERS_ID = 501
 
 //The "content:// is for use the Content provider for the use of the data base
 val CONTENT_AUTHORITY_URI: Uri = Uri.parse("content://$CONTENT_AUTHORITY")
@@ -55,6 +59,9 @@ class AppProvider : ContentProvider() {
 
         matcher.addURI(CONTENT_AUTHORITY, DurationsContract.TABLE_NAME, TASK_DURATIONS)
         //matcher.addURI(CONTENT_AUTHORITY,"${DurationsContract.TABLE_NAME}/#", TASK_DURATIONS_ID)
+
+        matcher.addURI(CONTENT_AUTHORITY, ParametersContract.TABLE_NAME, PARAMETERS)
+        matcher.addURI(CONTENT_AUTHORITY, "${ParametersContract.TABLE_NAME}/#", PARAMETERS_ID)
 
         return matcher
     }
@@ -112,6 +119,14 @@ class AppProvider : ContentProvider() {
             }
              */
 
+            PARAMETERS -> queryBuilder.tables = ParametersContract.TABLE_NAME
+
+            PARAMETERS_ID -> {
+                queryBuilder.tables = ParametersContract.TABLE_NAME
+                val parameterId = ParametersContract.getId(uri)
+                queryBuilder.appendWhere("${ParametersContract.Columns.ID} = ")
+                queryBuilder.appendWhereEscapeString("$parameterId")
+            }
 
 
             else -> throw IllegalArgumentException("Unknown URI: $uri")
@@ -142,6 +157,9 @@ class AppProvider : ContentProvider() {
             /*
             TASK_DURATIONS_ID -> DurationsContract.CONTENT_ITEM_TYPE
              */
+            PARAMETERS -> ParametersContract.CONTENT_TYPE
+
+            PARAMETERS_ID -> ParametersContract.CONTENT_ITEM_TYPE
 
             else -> throw IllegalArgumentException("unknown Uri: $uri")
         }
@@ -177,6 +195,8 @@ class AppProvider : ContentProvider() {
                     throw SQLException("Failed to insert, Uri was: $uri")
                 }
             }
+
+
             else -> throw java.lang.IllegalArgumentException("Unknown uri: $uri")
         }
 
@@ -238,6 +258,22 @@ class AppProvider : ContentProvider() {
 
                 count =
                     db.update(TimingsContract.TABLE_NAME, values, selectionCriteria, selectionArgs)
+            }
+
+            PARAMETERS_ID -> {
+                val db = AppDataBase.getInstance(context).writableDatabase
+                val id = ParametersContract.getId(uri)
+                selectionCriteria = "${ParametersContract.Columns.ID} = $id"
+
+                if (selection != null && selection.isNotEmpty()) {
+                    selectionCriteria += " AND ($selection)"
+                }
+                count = db.update(
+                    ParametersContract.TABLE_NAME,
+                    values,
+                    selectionCriteria,
+                    selectionArgs
+                )
             }
             else -> throw IllegalArgumentException("Unknown uri: $uri")
         }

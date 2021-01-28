@@ -14,22 +14,28 @@ import www.sebasorozco.com.tasktimer.databinding.TaskListItemsBinding
 class TaskViewHolder(private val containerView: View) :
     RecyclerView.ViewHolder(containerView){
 
+    lateinit var task: Task
+
     private val binding = TaskListItemsBinding.bind(containerView)
 
     fun bind(task: Task, listener: CursorRecyclerViewAdapter.OnTaskClickListener) = with(binding) {
 
+        this@TaskViewHolder.task = task
+
         tliName.text = task.name
         tliDescription.text = task.description
         tliEdit.visibility = View.VISIBLE
-        tliDelete.visibility = View.VISIBLE
+        //tliDelete.visibility = View.VISIBLE
 
         tliEdit.setOnClickListener {
             listener.onEditClick(task)
         }
 
+        /*
         tliDelete.setOnClickListener {
             listener.onDeleteClick(task)
         }
+         */
 
         containerView.setOnLongClickListener {
             listener.onTaskLongClick(task)
@@ -45,7 +51,8 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?, private val listene
 
     interface OnTaskClickListener {
         fun onEditClick(task: Task)
-        fun onDeleteClick(task: Task)
+
+        //fun onDeleteClick(task: Task)
         fun onTaskLongClick(task: Task)
     }
 
@@ -68,7 +75,7 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?, private val listene
             binding.tliName.setText(R.string.instruction_heading)
             binding.tliDescription.setText(R.string.description_heading)
             binding.tliEdit.visibility = View.GONE
-            binding.tliDelete.visibility = View.GONE
+            //binding.tliDelete.visibility = View.GONE
         } else {
             if (!cursor.moveToPosition(position)) {
                 throw IllegalStateException("Couldn't move to position $position")

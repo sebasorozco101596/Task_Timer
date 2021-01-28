@@ -16,6 +16,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import www.sebasorozco.com.tasktimer.BuildConfig
 import www.sebasorozco.com.tasktimer.data.database.*
 import www.sebasorozco.com.tasktimer.ui.dialogs.SETTINGS_DEFAULT_IGNORE_LESS_THAN
 import www.sebasorozco.com.tasktimer.ui.dialogs.SETTINGS_IGNORE_LESS_THAN
@@ -58,6 +59,10 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
     private val taskTiming = MutableLiveData<String>()
     val timing: LiveData<String>
         get() = taskTiming
+
+    // Variable for check if the task is being edited
+    var editedTaskId = 0L
+        private set
 
     init {
         Log.d(TAG, "TaskTimerViewModel: created")
@@ -102,6 +107,24 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    /*
+    Function for know if the task is being edited
+     */
+    fun startEditing(taskId: Long) {
+        if (BuildConfig.DEBUG && editedTaskId != 0L) throw IllegalStateException(
+            "startEditing called without stopping previous edit. editedTaskId: $editedTaskId, taskId: $taskId"
+        )
+
+        editedTaskId = taskId
+    }
+
+    /*
+    Function for know where the task is finished of editing
+     */
+    fun stopEditing() {
+        editedTaskId = 0L
+    }
+
     fun deleteTask(taskId: Long) {
         Log.d(TAG, "Deleting task")
 
@@ -112,6 +135,11 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
                 null,
                 null
             )
+        }
+        // Fix display when the currently timed task is deleted
+        if (currentTiming?.taskId == taskId) {
+            currentTiming = null
+            taskTiming.value = null
         }
     }
 

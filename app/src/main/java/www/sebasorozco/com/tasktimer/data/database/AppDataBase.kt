@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import learnprogramming.academy.tasktimer.ParametersContract
 
 /**
  * Basic database class for the application
@@ -12,7 +13,7 @@ import android.util.Log
  */
 private const val TAG = "AppDataBase"
 private const val DATABASE_NAME = "TaskTimer.db"
-private const val DATABASE_VERSION = 4
+private const val DATABASE_VERSION = 5
 
 //Making the constructor private is the first step to create a Singleton class
 internal class AppDataBase private constructor(context: Context) : SQLiteOpenHelper(
@@ -39,6 +40,7 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
         addTimingsTable(db)
         addCurrentTimingView(db)
         addDurationsView(db)
+        parameteriseView(db)
 
     }
 
@@ -50,13 +52,19 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
                 addTimingsTable(db)
                 addCurrentTimingView(db)
                 addDurationsView(db)
+                parameteriseView(db)
             }
             2 -> {
                 addCurrentTimingView(db)
                 addDurationsView(db)
+                parameteriseView(db)
             }
             3 -> {
                 addDurationsView(db)
+                parameteriseView(db)
+            }
+            4 -> {
+                parameteriseView(db)
             }
             else -> throw IllegalStateException("onUpgrade() with unknown newVersion: $newVersion")
         }
@@ -139,6 +147,55 @@ internal class AppDataBase private constructor(context: Context) : SQLiteOpenHel
         GROUP BY ${TasksContract.TABLE_NAME}.${TasksContract.Columns.ID}, ${DurationsContract.Columns.START_DATE};
     """.replaceIndent(" ")
 
+        Log.d(TAG, sSQL)
+        db.execSQL(sSQL)
+    }
+
+    private fun parameteriseView(db: SQLiteDatabase) {
+        var sSQL = """CREATE TABLE ${ParametersContract.TABLE_NAME}
+            (${ParametersContract.Columns.ID} INTEGER PRIMARY KEY NOT NULL,
+            ${ParametersContract.Columns.VALUE} INTEGER NOT NULL);""".trimMargin()
+        Log.d(TAG, sSQL)
+        db.execSQL(sSQL)
+
+        sSQL = "DROP VIEW IF EXISTS ${DurationsContract.TABLE_NAME};"
+        Log.d(TAG, sSQL)
+        db.execSQL(sSQL)
+
+        /**
+        CREATE VIEW vwTaskDurations AS
+        SELECT Tasks.Name,
+        Tasks.Description,
+        Timings.StartTime,
+        DATE(Timings.StartTime, 'unixepoch') AS StartDate,
+        SUM(Timings.Duration) AS Duration
+        FROM Tasks INNER JOIN Timings
+        ON Tasks._id = Timings.TaskId
+        WHERE Timings.Duration > (SELECT Parameters.value FROM Parameters WHERE Parameters._id = 1)
+        GROUP BY Tasks._id, StartDate;
+         **/
+        sSQL = """CREATE VIEW ${DurationsContract.TABLE_NAME}
+            AS SELECT ${TasksContract.TABLE_NAME}.${TasksContract.Columns.TASK_NAME},
+            ${TasksContract.TABLE_NAME}.${TasksContract.Columns.TASK_DESCRIPTION},
+            ${TimingsContract.TABLE_NAME}.${TimingsContract.Columns.TIMING_START_TIME},
+            DATE(${TimingsContract.TABLE_NAME}.${TimingsContract.Columns.TIMING_START_TIME}, 'unixepoch', 'localtime')
+            AS ${DurationsContract.Columns.START_DATE},
+            SUM(${TimingsContract.TABLE_NAME}.${TimingsContract.Columns.TIMING_DURATION})
+            AS ${DurationsContract.Columns.DURATION}
+            FROM ${TasksContract.TABLE_NAME} INNER JOIN ${TimingsContract.TABLE_NAME}
+            ON ${TasksContract.TABLE_NAME}.${TasksContract.Columns.ID} =
+            ${TimingsContract.TABLE_NAME}.${TimingsContract.Columns.TIMING_TASK_ID}
+            WHERE ${TimingsContract.TABLE_NAME}.${TimingsContract.Columns.TIMING_DURATION} >
+                (SELECT ${ParametersContract.TABLE_NAME}.${ParametersContract.Columns.VALUE}
+                FROM ${ParametersContract.TABLE_NAME}
+                WHERE ${ParametersContract.TABLE_NAME}.${ParametersContract.Columns.ID} = ${ParametersContract.ID_SHORT_TIMING})
+            GROUP BY ${TasksContract.TABLE_NAME}.${TasksContract.Columns.ID}, ${DurationsContract.Columns.START_DATE}
+            ;""".replaceIndent(" ")
+        Log.d(TAG, sSQL)
+        db.execSQL(sSQL)
+
+        sSQL =
+            """INSERT INTO ${ParametersContract.TABLE_NAME} VALUES (${ParametersContract.ID_SHORT_TIMING}, 0);"""
         Log.d(TAG, sSQL)
         db.execSQL(sSQL)
     }

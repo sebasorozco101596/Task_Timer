@@ -2,6 +2,7 @@ package www.sebasorozco.com.tasktimer.ui.dialogs
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
@@ -23,9 +24,9 @@ class AppDialog : AppCompatDialogFragment() {
      * (deletion, confirmed, etc...).
      */
     internal interface DialogEvents {
-        fun onPositiveDialogResult(dialogId: Int, args: Bundle)
-        //fun onNegativeDialogResult(dialogId: Int, args: Bundle)
-        //fun onDialogCancel(dialogId: Int)
+        fun onPositiveDialogResult(dialogId: Int, args: Bundle) {}
+        fun onNegativeDialogResult(dialogId: Int, args: Bundle) {}
+        fun onDialogCancel(dialogId: Int) {}
     }
 
     override fun onAttach(context: Context) {
@@ -93,7 +94,7 @@ class AppDialog : AppCompatDialogFragment() {
             }
             .setNegativeButton(negativeStringId) { _, _ ->
                 // Callback negative result function, if you want to implement it
-                // dialogEvents?.onNegativeDialogResult(dialogId, arguments)
+                dialogEvents?.onNegativeDialogResult(dialogId, arguments)
             }.create()
     }
 
@@ -105,11 +106,11 @@ class AppDialog : AppCompatDialogFragment() {
         dialogEvents = null
     }
 
-    /*
+
     override fun onCancel(dialog: DialogInterface) {
         Log.d(TAG, "onCancel: called")
-        //val dialogId= requireArguments().getInt(DIALOG_ID)
-       // dialogEvents?.onDialogCancel(dialogId)
+        val dialogId = requireArguments().getInt(DIALOG_ID)
+        dialogEvents?.onDialogCancel(dialogId)
     }
-     */
+
 }

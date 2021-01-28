@@ -16,7 +16,7 @@
     <string name="addeditSortHint">Order: sorts low to high</string>
     <string name="addeditSaveText">Save</string>
     <string name="instruction_heading">instructions</string>
-    <string name="description_heading">Use the add button (+) in the toolbar above to create new tasks. \n\nTasks with lower sort orders will be placed higher up the list. Tasks with the same sort order will be sorted alphabetically.\n\nTapping a task will start the timer for that task (and will stop the timer for any previous task that was being timed).\n\nEach task has Edit and Delete buttons if you want to change the details or remove the task.</string>
+    <string name="description_heading">Use the add button (+) in the toolbar above to create new tasks. \n\nTasks with lower sort orders will be placed higher up the list. Tasks with the same sort order will be sorted alphabetically.\n\nTapping a task will start the timer for that task (and will stop the timer for any previous task that was being timed).\n\nEach task has an edit button if you want to change the details.\n\nSwipe a task left to delete it.</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="deldiag_positive_caption">Delete</string>
@@ -43,4 +43,5 @@
     <string name="date_title_filter">Select date for report</string>
     <string name="date_title_delete">Select the date to delete up to</string>
     <string name="delete_timings_message">Are you sure you want to delete all timings before %1$s</string>
+    <string name="delete_edited_task">You can\'t delete the task that\'s being edited</string>
 </resources>
