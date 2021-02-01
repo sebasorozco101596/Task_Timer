@@ -16,6 +16,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import learnprogramming.academy.tasktimer.ParametersContract
 import www.sebasorozco.com.tasktimer.BuildConfig
 import www.sebasorozco.com.tasktimer.data.database.*
 import www.sebasorozco.com.tasktimer.ui.dialogs.SETTINGS_DEFAULT_IGNORE_LESS_THAN
@@ -47,6 +48,20 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
                         TAG,
                         "settingsListener: now ignoring timings less than $ignoreLessThan seconds"
                     )
+
+                    // Update the database parameters table
+                    val values = ContentValues()
+                    values.put(ParametersContract.Columns.VALUE, ignoreLessThan)
+                    viewModelScope.launch(Dispatchers.IO) {
+                        val uri = getApplication<Application>().contentResolver
+                            .update(
+                                ParametersContract.buildUriFromId(ParametersContract.ID_SHORT_TIMING),
+                                values,
+                                null,
+                                null
+                            )
+                    }
+
                 }
             }
         }
@@ -90,10 +105,10 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
             TasksContract.Columns.TASK_SORT_ORDER
         )
 
-        // <Order by> Tasks.sort_order, Tasks.name
+        // <Order by> Tasks.sort_order, Tasks.name COLLATE NOCASE
 
         val sortOrder =
-            "${TasksContract.Columns.TASK_SORT_ORDER}, ${TasksContract.Columns.TASK_NAME}"
+            "${TasksContract.Columns.TASK_SORT_ORDER}, ${TasksContract.Columns.TASK_NAME} COLLATE NOCASE"
 
         //The GlobalScore.launch is the way to create a thread in a coroutine
         viewModelScope.launch(Dispatchers.IO) {
@@ -196,23 +211,12 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
                     currentTiming.id = TimingsContract.getId(uri)
                 }
             } else {
-                // Only save if the duration is larger than the value we should ignore
-                if (currentTiming.duration >= ignoreLessThan) {
-                    Log.d(TAG, "saveTiming: saving timing with duration ${currentTiming.duration}")
-                    getApplication<Application>().contentResolver.update(
-                        TimingsContract.buildUriFromId(
-                            currentTiming.id
-                        ), values, null, null
-                    )
-                } else {
-                    // Too short to save, delete it instead
-                    Log.d(TAG, "saveTiming: deleting row with duration ${currentTiming.duration}")
-                    getApplication<Application>().contentResolver.delete(
-                        TimingsContract.buildUriFromId(
-                            currentTiming.id
-                        ), null, null
-                    )
-                }
+                Log.d(TAG, "saveTiming: saving timing with duration ${currentTiming.duration}")
+                getApplication<Application>().contentResolver.update(
+                    TimingsContract.buildUriFromId(
+                        currentTiming.id
+                    ), values, null, null
+                )
             }
         }
     }

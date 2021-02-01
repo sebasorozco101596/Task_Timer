@@ -15,6 +15,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import learnprogramming.academy.tasktimer.ParametersContract
 import www.sebasorozco.com.tasktimer.data.database.DurationsContract
 import www.sebasorozco.com.tasktimer.data.database.TimingsContract
 import www.sebasorozco.com.tasktimer.ui.dialogs.SETTINGS_FIRST_DAY_OF_WEEK
@@ -101,6 +102,12 @@ class DurationsViewModel(application: Application) : AndroidViewModel(applicatio
         calendar.firstDayOfWeek = firstDayOfWeek
         application.contentResolver.registerContentObserver(
             TimingsContract.CONTENT_URI,
+            true,
+            contentObserver
+        )
+
+        application.contentResolver.registerContentObserver(
+            ParametersContract.CONTENT_URI,
             true,
             contentObserver
         )
